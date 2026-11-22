@@ -22,7 +22,7 @@ def test_scramble_route_default(client):
     data = response.json()
     assert "scramble" in data
     assert "faces" in data
-    assert len(data["scramble"]) == 6
+    assert 6 <= len(data["scramble"]) <= 12
 
     # Verify that the returned faces represent a valid cube state
     state = state_from_faces(data["faces"])

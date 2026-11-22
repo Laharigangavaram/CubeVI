@@ -76,8 +76,9 @@ try {
 }
 
 
-export async function scrambleCube(length = 6) {
-  const res = await fetch(`${API_URL}/scramble?length=${length}`);
+export async function scrambleCube(length = null) {
+  const url = length != null ? `${API_URL}/scramble?length=${length}` : `${API_URL}/scramble`;
+  const res = await fetch(url);
 
   const data = await res.json();
 

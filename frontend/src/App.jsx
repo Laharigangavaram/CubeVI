@@ -101,7 +101,7 @@ export default function App() {
 
       cubeRef.current.resetPose();
 
-      const data = await scrambleCube(6);
+      const data = await scrambleCube();
 
       setColors(
         ['U', 'R', 'F', 'D', 'L', 'B'].flatMap(

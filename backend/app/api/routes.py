@@ -26,7 +26,7 @@ def health() -> HealthResponse:
 
 
 @router.get("/scramble", response_model=ScrambleResponse)
-def scramble(length: int = 6) -> ScrambleResponse:
+def scramble(length: int | None = None) -> ScrambleResponse:
     try:
         state, moves = generate_scramble(length=length)
     except ValueError as error:

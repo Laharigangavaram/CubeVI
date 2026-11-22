@@ -139,6 +139,43 @@ def test_generate_scramble():
         generate_scramble(length=-5)
 
 
+def test_generate_scramble_seed_reproducibility():
+    """Providing the same seed must produce identical scrambles."""
+    state1, moves1 = generate_scramble(length=12, seed=42)
+    state2, moves2 = generate_scramble(length=12, seed=42)
+    assert moves1 == moves2
+    assert state1 == state2
+
+    _, moves3 = generate_scramble(length=12, seed=99)
+    assert moves1 != moves3
+
+
+def test_generate_scramble_opposite_face_cancellation():
+    """Scramble generator must avoid commuting cancellations across opposite faces."""
+    from app.cube.scramble import OPPOSITE_FACES
+
+    for seed in range(20):
+        _, moves = generate_scramble(length=20, seed=seed)
+        for i in range(len(moves) - 2):
+            f1, f2, f3 = moves[i][0], moves[i + 1][0], moves[i + 2][0]
+            if OPPOSITE_FACES.get(f1) == f2:
+                assert f3 != f1, f"Found commuting cancellation: {moves[i]} {moves[i+1]} {moves[i+2]}"
+                assert f3 != f2, f"Found consecutive turn on opposite axis: {moves[i]} {moves[i+1]} {moves[i+2]}"
+
+
+def test_generate_scramble_one_in_ten_worst_case():
+    """Generating 10 default scrambles guarantees at least one worst-case scenario (10-12 moves)."""
+    lengths = []
+    for _ in range(10):
+        _, moves = generate_scramble()
+        lengths.append(len(moves))
+
+    # At least 1 out of 10 must be in the worst-case range (10-12 moves)
+    assert any(10 <= l <= 12 for l in lengths)
+    # The others must be in the standard 6-7 move range
+    assert any(6 <= l <= 7 for l in lengths)
+
+
 def test_serialization_roundtrip():
     """Serializing to faces and back must restore the exact same CubeState."""
     solved = CubeState.solved()
